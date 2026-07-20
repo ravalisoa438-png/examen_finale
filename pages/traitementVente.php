@@ -13,7 +13,9 @@ $id_produit = $_POST['id_produit'];
 $quantite_dispo = $_POST['dispo'];
 $prix_vente = $_POST['prix'];
 $date_dispo = date('Y-m-d');
+$perime = isset($_POST['perime']) ? 1 : 0;
 
+// Gestion de la photo (seulement utile lors d'un ajout)
 $newName = null;
 
 if (isset($_FILES['fichier']) && $_FILES['fichier']['error'] === UPLOAD_ERR_OK) {
@@ -43,11 +45,16 @@ if (isset($_FILES['fichier']) && $_FILES['fichier']['error'] === UPLOAD_ERR_OK) 
     }
 }
 
-if ($newName === null) {
-    $newName = get_photo_defaut_produit($id_produit);
+if (!empty($_POST['id_produit_membre'])) {
+    // Modification d'une vente existante
+    modifier_produit_membre($_POST['id_produit_membre'], $prix_vente, $quantite_dispo, $date_dispo, $perime);
+} else {
+    // Ajout d'un nouveau produit a vendre
+    if ($newName === null) {
+        $newName = get_photo_defaut_produit($id_produit);
+    }
+    add_produit_membre($id_produit, $_SESSION['user_id'], $prix_vente, $quantite_dispo, $date_dispo, $newName, $perime);
 }
-
-add_produit_membre($id_produit, $_SESSION['user_id'], $prix_vente, $quantite_dispo, $date_dispo, $newName);
 
 header('Location: accueil.php');
 exit();

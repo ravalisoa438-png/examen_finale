@@ -9,24 +9,11 @@ if (!empty($_POST['id_produit_membre']) && !empty($_POST['quantite'])) {
 
     $ok = acheter_produit($id_produit_membre, $quantite);
 
-    if ($ok) {
-        $message = "Achat effectue avec succes.";
-    } else {
-        $message = "Erreur : quantite non disponible.";
-    }
+    $message = $ok ? "Achat effectue avec succes." : "Erreur : quantite non disponible.";
 }
 
-if (isset($_GET['id_categorie'])) {
-    $id_categorie = (int)$_GET['id_categorie'];
-} else {
-    $id_categorie = 0;
-}
-
-if (isset($_GET['id_produit'])) {
-    $id_produit = (int)$_GET['id_produit'];
-} else {
-    $id_produit = 0;
-}
+$id_categorie = isset($_GET['id_categorie']) ? (int)$_GET['id_categorie'] : 0;
+$id_produit = isset($_GET['id_produit']) ? (int)$_GET['id_produit'] : 0;
 
 $categories = get_categories();
 $tous_produits = get_all_product();
@@ -34,7 +21,6 @@ $produits = get_produits_filtre($id_categorie, $id_produit);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,7 +28,6 @@ $produits = get_produits_filtre($id_categorie, $id_produit);
     <link rel="stylesheet" href="../assets/css/style.css" />
     <title>Accueil</title>
 </head>
-
 <body>
     <header class="site-header">
         <a href="accueil.php" class="brand">
@@ -97,6 +82,11 @@ $produits = get_produits_filtre($id_categorie, $id_produit);
         <div class="grid-produits">
             <?php foreach ($produits as $produit) { ?>
                 <div class="card">
+                    <?php if (!empty($produit['photo'])) { ?>
+                        <img src="uploads/<?= $produit['photo'] ?>" alt="<?= $produit['nom'] ?>" style="width:100%; height:140px; object-fit:cover; border-radius:var(--radius); margin-bottom:10px;">
+                    <?php } elseif (!empty($produit['photo_defaut'])) { ?>
+                        <img src="img/produits/<?= $produit['photo_defaut'] ?>" alt="<?= $produit['nom'] ?>" style="width:100%; height:140px; object-fit:cover; border-radius:var(--radius); margin-bottom:10px;">
+                    <?php } ?>
                     <span class="badge"><?= $produit['nom_categorie'] ?></span>
                     <h3><?= $produit['nom'] ?></h3>
                     <p class="vendeur">vendu par <?= $produit['nom_membre'] ?></p>
@@ -119,5 +109,4 @@ $produits = get_produits_filtre($id_categorie, $id_produit);
         </div>
     </div>
 </body>
-
 </html>
