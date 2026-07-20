@@ -91,4 +91,18 @@ function acheter_produit($id_produit_membre, $quantite)
     maj_quantite_dispo($id_produit_membre, $nouvelle_quantite);
  
     return true;
+   
 }
+function get_all_product() {
+    $sql = "select * from produit";
+    return get_all_lines($sql);
+}
+function add_produit_membre($id_produit, $id_membre, $prix_vente, $quantite_dispo, $date_dispo) {
+    $sql = "insert into produit_membre (id_produit, id_membre, prix_vente, quantite_dispo, date_dispo)
+            values ($id_produit, $id_membre, $prix_vente, $quantite_dispo, '$date_dispo')";
+    $req = mysqli_query(dbconnect(), $sql);
+    if (!$req) {
+        die('Erreur SQL : ' . mysqli_error(dbconnect()));
+    }
+    return $req;
+} 
