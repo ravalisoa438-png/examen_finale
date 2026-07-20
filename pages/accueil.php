@@ -16,7 +16,12 @@ if (!empty($_POST['id_produit_membre']) && !empty($_POST['quantite'])) {
     }
 }
 
-$produits = get_produits_dispo();
+$id_categorie = isset($_GET['id_categorie']) ? (int)$_GET['id_categorie'] : 0;
+$id_produit = isset($_GET['id_produit']) ? (int)$_GET['id_produit'] : 0;
+
+$categories = get_categories();
+$tous_produits = get_all_product();
+$produits = get_produits_filtre($id_categorie, $id_produit);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -44,6 +49,7 @@ $produits = get_produits_dispo();
             <a href="accueil.php">Produits</a>
             <a href="vendre.php">Vendre</a>
             <a href="mesVente.php">Mes ventes</a>
+            <a href="statistiques.php">Statistiques</a>
         </nav>
     </header>
 
@@ -53,6 +59,30 @@ $produits = get_produits_dispo();
         <?php if ($message) { ?>
             <div class="message"><?= $message ?></div>
         <?php } ?>
+
+        <form class="form-filtre" method="get" action="">
+            <select name="id_categorie">
+                <option value="0">Toutes les categories</option>
+                <?php foreach ($categories as $categorie) { ?>
+                    <option value="<?= $categorie['id_categorie'] ?>"
+                        <?= ($id_categorie == $categorie['id_categorie']) ? 'selected' : '' ?>>
+                        <?= $categorie['nom_categorie'] ?>
+                    </option>
+                <?php } ?>
+            </select>
+
+            <select name="id_produit">
+                <option value="0">Tous les produits</option>
+                <?php foreach ($tous_produits as $p) { ?>
+                    <option value="<?= $p['id_produit'] ?>"
+                        <?= ($id_produit == $p['id_produit']) ? 'selected' : '' ?>>
+                        <?= $p['nom'] ?>
+                    </option>
+                <?php } ?>
+            </select>
+
+            <button class="btn btn-filtre" type="submit">Filtrer</button>
+        </form>
 
         <div class="grid-produits">
             <?php foreach ($produits as $produit) { ?>
@@ -71,6 +101,10 @@ $produits = get_produits_dispo();
                         <button class="btn btn-buy" type="submit">Acheter</button>
                     </form>
                 </div>
+            <?php } ?>
+
+            <?php if (empty($produits)) { ?>
+                <p>Aucun produit ne correspond a ce filtre.</p>
             <?php } ?>
         </div>
     </div>

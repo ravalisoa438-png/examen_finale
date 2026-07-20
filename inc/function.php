@@ -116,3 +116,89 @@ function get_total_ventes($id_membre)
     $result = get_one_line($sql);
     return $result['total'];
 }
+function get_ventes_categories()
+{
+    $sql = "SELECT c.id_categorie, c.nom_categorie,
+                   SUM(v.quantite) AS qte_vendue,
+                   SUM(v.quantite * pm.prix_vente) AS total_vente
+            FROM vente v
+            JOIN produit_membre pm ON v.id_produit_membre = pm.id_produit_membre
+            JOIN produit p ON pm.id_produit = p.id_produit
+            JOIN categorie c ON p.id_categorie = c.id_categorie
+            GROUP BY c.id_categorie, c.nom_categorie
+            ORDER BY total_vente DESC";
+    return get_all_lines($sql);
+}
+ 
+function get_nom_categorie($id_categorie)
+{
+    $sql = "SELECT nom_categorie FROM categorie WHERE id_categorie = %d";
+    $sql = sprintf($sql, $id_categorie);
+    $categorie = get_one_line($sql);
+    return $categorie['nom_categorie'];
+}
+ 
+function get_ventes_produits($id_categorie)
+{
+    $sql = "SELECT p.id_produit, p.nom,
+                   SUM(v.quantite) AS qte_vendue,
+                   SUM(v.quantite * pm.prix_vente) AS total_vente
+            FROM vente v
+            JOIN produit_membre pm ON v.id_produit_membre = pm.id_produit_membre
+            JOIN produit p ON pm.id_produit = p.id_produit
+            WHERE p.id_categorie = %d
+            GROUP BY p.id_produit, p.nom
+            ORDER BY total_vente DESC";
+    $sql = sprintf($sql, $id_categorie);
+    return get_all_lines($sql);
+}
+ 
+function get_produit_par_id($id_produit)
+{
+    $sql = "SELECT nom, id_categorie FROM produit WHERE id_produit = %d";
+    $sql = sprintf($sql, $id_produit);
+    return get_one_line($sql);
+}
+ 
+function get_ventes_membres($id_produit)
+{
+    $sql = "SELECT m.id_membre, m.nom,
+                   SUM(v.quantite) AS qte_vendue,
+                   SUM(v.quantite * pm.prix_vente) AS total_vente
+            FROM vente v
+            JOIN produit_membre pm ON v.id_produit_membre = pm.id_produit_membre
+            JOIN membre m ON pm.id_membre = m.id_membre
+            WHERE pm.id_produit = %d
+            GROUP BY m.id_membre, m.nom
+            ORDER BY total_vente DESC";
+    $sql = sprintf($sql, $id_produit);
+    return get_all_lines($sql);
+}
+function get_categories()
+{
+    $sql = "SELECT * FROM categorie ORDER BY nom_categorie";
+    return get_all_lines($sql);
+}
+
+function get_produits_filtre($id_categorie, $id_produit)
+{
+    $sql = "SELECT pm.id_produit_membre, p.nom, p.prix_reference, pm.prix_vente,
+                   pm.quantite_dispo, m.nom AS nom_membre, c.nom_categorie
+            FROM produit_membre pm
+            JOIN produit p ON pm.id_produit = p.id_produit
+            JOIN membre m ON pm.id_membre = m.id_membre
+            JOIN categorie c ON p.id_categorie = c.id_categorie
+            WHERE pm.quantite_dispo > 0";
+
+    if ($id_categorie > 0) {
+        $sql .= sprintf(" AND p.id_categorie = %d", $id_categorie);
+    }
+
+    if ($id_produit > 0) {
+        $sql .= sprintf(" AND p.id_produit = %d", $id_produit);
+    }
+
+    $sql .= " ORDER BY p.nom";
+
+    return get_all_lines($sql);
+}

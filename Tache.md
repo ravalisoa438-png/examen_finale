@@ -13,6 +13,7 @@
   - enregistrer_vente
   - maj_quantite_dispo
   - acheter_produit
+  - statistique.php
 
 **ETU004958**
 - base.sql
@@ -23,3 +24,4 @@
   - get_total_ventes
   - add_produit_membre
   - get_total_ventes
+- 
