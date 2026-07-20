@@ -2,7 +2,7 @@
 ini_set('display_errors', 1);
 ini_set('display_error_reporting', E_ALL);
 error_reporting(E_ALL); 
-include('../inc/fonctions.php');
+include('../inc/function.php');
 $result = get_all_product();
 ?>
 
@@ -18,7 +18,7 @@ $result = get_all_product();
         <h1>Vendre un produit</h1>
     </header>
     <main>
-        <form action="traitement.php" method="post">
+        <form action="traitementVente.php" method="post">
             <select name="id_produit" id="">
             <option value="">--Choisir un produit--</option>
                 <?php foreach ($result as $key) { ?>

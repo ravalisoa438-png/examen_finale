@@ -93,16 +93,26 @@ function acheter_produit($id_produit_membre, $quantite)
     return true;
    
 }
-function get_all_product() {
-    $sql = "select * from produit";
+function get_all_product()
+{
+    $sql = "SELECT * FROM produit ORDER BY nom";
     return get_all_lines($sql);
 }
-function add_produit_membre($id_produit, $id_membre, $prix_vente, $quantite_dispo, $date_dispo) {
-    $sql = "insert into produit_membre (id_produit, id_membre, prix_vente, quantite_dispo, date_dispo)
-            values ($id_produit, $id_membre, $prix_vente, $quantite_dispo, '$date_dispo')";
-    $req = mysqli_query(dbconnect(), $sql);
-    if (!$req) {
-        die('Erreur SQL : ' . mysqli_error(dbconnect()));
-    }
-    return $req;
-} 
+ 
+function add_produit_membre($id_produit, $id_membre, $prix_vente, $quantite_dispo, $date_dispo)
+{
+    $sql = "INSERT INTO produit_membre(id_produit, id_membre, prix_vente, quantite_dispo, date_dispo)
+            VALUES (%d, %d, %d, %d, '%s')";
+    $sql = sprintf($sql, $id_produit, $id_membre, $prix_vente, $quantite_dispo, $date_dispo);
+    mysqli_query(dbconnect(), $sql);
+}
+function get_total_ventes($id_membre)
+{
+    $sql = "SELECT SUM(v.quantite * pm.prix_vente) AS total
+            FROM vente v
+            JOIN produit_membre pm ON v.id_produit_membre = pm.id_produit_membre
+            WHERE pm.id_membre = %d";
+    $sql = sprintf($sql, $id_membre);
+    $result = get_one_line($sql);
+    return $result['total'];
+}

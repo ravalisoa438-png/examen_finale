@@ -1,15 +1,17 @@
 <?php
 session_start();
-include('../inc/fonctions.php');
+include('../inc/function.php');
 
-if (!isset($_SESSION['id_membre'])) {
-    die("Vous devez être connecté pour vendre un produit.");
+if (!isset($_SESSION['user_id'])) {
+    die("Vous devez etre connecte pour vendre un produit.");
 }
 
-$id_produit = $_GET['id_produit'];
-$quantite_dispo = $_GET['dispo'];
-$prix_vente = $_GET['avendre'];
+$id_produit = $_POST['id_produit'];
+$quantite_dispo = $_POST['dispo'];
+$prix_vente = $_POST['prix'];
 $date_dispo = date('Y-m-d');
 
-add_produit_membre($id_produit, $_SESSION['id_membre'], $prix_vente, $quantite_dispo, $date_dispo);
-?>
+add_produit_membre($id_produit, $_SESSION['user_id'], $prix_vente, $quantite_dispo, $date_dispo);
+
+header('Location: accueil.php');
+exit();
