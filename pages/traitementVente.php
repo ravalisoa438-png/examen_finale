@@ -10,8 +10,13 @@ $id_produit = $_POST['id_produit'];
 $quantite_dispo = $_POST['dispo'];
 $prix_vente = $_POST['prix'];
 $date_dispo = date('Y-m-d');
+$perime = isset($_POST['perime']) ? 1 : 0;
 
-add_produit_membre($id_produit, $_SESSION['user_id'], $prix_vente, $quantite_dispo, $date_dispo);
+if (!empty($_POST['id_produit_membre'])) {
+    modifier_produit_membre($_POST['id_produit_membre'], $prix_vente, $quantite_dispo, $date_dispo, $perime);
+} else {
+    add_produit_membre($id_produit, $_SESSION['user_id'], $prix_vente, $quantite_dispo, $date_dispo, $perime);
+}
 
 header('Location: accueil.php');
 exit();

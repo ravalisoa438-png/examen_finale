@@ -99,11 +99,11 @@ function get_all_product()
     return get_all_lines($sql);
 }
  
-function add_produit_membre($id_produit, $id_membre, $prix_vente, $quantite_dispo, $date_dispo)
+function add_produit_membre($id_produit, $id_membre, $prix_vente, $quantite_dispo, $date_dispo, $perime = 0)
 {
-    $sql = "INSERT INTO produit_membre(id_produit, id_membre, prix_vente, quantite_dispo, date_dispo)
-            VALUES (%d, %d, %d, %d, '%s')";
-    $sql = sprintf($sql, $id_produit, $id_membre, $prix_vente, $quantite_dispo, $date_dispo);
+    $sql = "INSERT INTO produit_membre(id_produit, id_membre, prix_vente, quantite_dispo, date_dispo, perime)
+            VALUES (%d, %d, %d, %d, '%s', %d)";
+    $sql = sprintf($sql, $id_produit, $id_membre, $prix_vente, $quantite_dispo, $date_dispo, $perime);
     mysqli_query(dbconnect(), $sql);
 }
 function get_total_ventes($id_membre)
@@ -191,14 +191,44 @@ function get_produits_filtre($id_categorie, $id_produit)
             WHERE pm.quantite_dispo > 0";
 
     if ($id_categorie > 0) {
-        $sql .= sprintf(" AND p.id_categorie = %d", $id_categorie);
+        $sql =$sql . sprintf(" AND p.id_categorie = %d", $id_categorie);
     }
 
     if ($id_produit > 0) {
-        $sql .= sprintf(" AND p.id_produit = %d", $id_produit);
+        $sql = $sql . sprintf(" AND p.id_produit = %d", $id_produit);
     }
 
-    $sql .= " ORDER BY p.nom";
+    $sql =$sql . " ORDER BY p.nom";
 
+    return get_all_lines($sql);
+}
+function modifier_produit_membre($id_produit_membre, $prix_vente, $quantite_dispo, $date_dispo, $perime)
+{
+    $sql = "UPDATE produit_membre
+            SET prix_vente = %d, quantite_dispo = %d, date_dispo = '%s', perime = %d
+            WHERE id_produit_membre = %d";
+    $sql = sprintf($sql, $prix_vente, $quantite_dispo, $date_dispo, $perime, $id_produit_membre);
+    mysqli_query(dbconnect(), $sql);
+}
+function get_produits_par_membre($id_membre)
+{
+    $sql = "SELECT pm.id_produit_membre, p.nom, pm.prix_vente, pm.quantite_dispo, pm.date_dispo, pm.perime
+            FROM produit_membre pm
+            JOIN produit p ON pm.id_produit = p.id_produit
+            WHERE pm.id_membre = %d
+            ORDER BY p.nom";
+    $sql = sprintf($sql, $id_membre);
+    return get_all_lines($sql);
+}
+
+function get_tous_produits_membre()
+{
+    $sql = "SELECT pm.id_produit_membre, p.nom, pm.prix_vente, pm.quantite_dispo,
+                   pm.date_dispo, pm.perime, m.nom AS nom_membre, c.nom_categorie
+            FROM produit_membre pm
+            JOIN produit p ON pm.id_produit = p.id_produit
+            JOIN membre m ON pm.id_membre = m.id_membre
+            JOIN categorie c ON p.id_categorie = c.id_categorie
+            ORDER BY p.nom";
     return get_all_lines($sql);
 }

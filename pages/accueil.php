@@ -16,8 +16,17 @@ if (!empty($_POST['id_produit_membre']) && !empty($_POST['quantite'])) {
     }
 }
 
-$id_categorie = isset($_GET['id_categorie']) ? (int)$_GET['id_categorie'] : 0;
-$id_produit = isset($_GET['id_produit']) ? (int)$_GET['id_produit'] : 0;
+if (isset($_GET['id_categorie'])) {
+    $id_categorie = (int)$_GET['id_categorie'];
+} else {
+    $id_categorie = 0;
+}
+
+if (isset($_GET['id_produit'])) {
+    $id_produit = (int)$_GET['id_produit'];
+} else {
+    $id_produit = 0;
+}
 
 $categories = get_categories();
 $tous_produits = get_all_product();
@@ -38,18 +47,19 @@ $produits = get_produits_filtre($id_categorie, $id_produit);
     <header class="site-header">
         <a href="accueil.php" class="brand">
             <svg viewBox="0 0 100 100">
-                <polygon points="50,10 50,55 20,72 20,35" fill="#B4CD3E"/>
-                <polygon points="50,10 50,55 80,72 80,35" fill="#78B72A"/>
-                <polygon points="0,72 30,55 50,72 20,90" fill="#B4CD3E"/>
-                <polygon points="100,72 70,55 50,72 80,90" fill="#78B72A"/>
+                <polygon points="50,10 50,55 20,72 20,35" fill="#B4CD3E" />
+                <polygon points="50,10 50,55 80,72 80,35" fill="#78B72A" />
+                <polygon points="0,72 30,55 50,72 20,90" fill="#B4CD3E" />
+                <polygon points="100,72 70,55 50,72 80,90" fill="#78B72A" />
             </svg>
             IT-food
         </a>
         <nav class="nav">
-            <a href="accueil.php">Produits</a>
+            <a href="produit.php">Produits</a>
             <a href="vendre.php">Vendre</a>
             <a href="mesVente.php">Mes ventes</a>
             <a href="statistiques.php">Statistiques</a>
+            <a href="deconnexion.php">Déconnexion</a>
         </nav>
     </header>
 
@@ -109,4 +119,5 @@ $produits = get_produits_filtre($id_categorie, $id_produit);
         </div>
     </div>
 </body>
+
 </html>
